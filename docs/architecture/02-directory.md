@@ -8,6 +8,7 @@ app/Shared/Presentation     统一响应与 HTTP 中间件
 app/Shared/Exceptions       业务异常与缺少租户上下文
 app/Modules/Tenant          租户档案、创建租户、按 X-Tenant 解析
 app/Modules/Iam             用户、成员、部门、角色、权限、模块开通
+app/Modules/Hr              岗位、员工档案、入职离职、合同、考勤、请假
 resources/js                Vue 3 + TypeScript 壳
 resources/views/app.blade.php
 ```

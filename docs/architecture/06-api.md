@@ -38,5 +38,12 @@
 - `GET /api/v1/iam/plan`、`PUT /api/v1/iam/plan`
 - `GET /api/v1/iam/modules`、`PUT /api/v1/iam/modules/{moduleCode}`
 - `GET /api/v1/iam/permissions`
+- 人事需先开通 `hr`：`GET /api/v1/hr/organization`
+- `GET/POST /api/v1/hr/positions`、`PUT/DELETE /api/v1/hr/positions/{position}`
+- `GET/POST /api/v1/hr/employees`、`GET/PUT /api/v1/hr/employees/{employee}`、`POST /api/v1/hr/employees/{employee}/onboard`
+- `GET/POST /api/v1/hr/resignations`，以及 `approve`、`reject`、`complete`
+- `GET/POST /api/v1/hr/contracts`、`POST /api/v1/hr/contracts/{contract}/terminate`
+- `GET/POST /api/v1/hr/attendance`
+- `GET/POST /api/v1/hr/leaves`，以及 `approve`、`reject`
 
 OpenAPI 由 dedoc/scramble 根据路由和 FormRequest 生成，地址是 `GET /docs/api.json`。测试断言本阶段 `/api/v1` 路由都出现在文档中。

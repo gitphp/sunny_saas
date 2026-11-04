@@ -14,6 +14,8 @@ namespace App\Modules\Iam\Application\Menu;
 
 use App\Modules\Iam\Application\Access\AccessService;
 use App\Modules\Iam\Application\Access\DataScopeResolver;
+use App\Modules\Tenant\Application\Contracts\TenantPlanQuery;
+use App\Shared\Tenancy\TenantContext;
 use App\Modules\Iam\Infrastructure\Persistence\Permission;
 use App\Modules\Iam\Infrastructure\Persistence\Role;
 use App\Modules\Iam\Infrastructure\Persistence\TenantUser;
@@ -31,6 +33,8 @@ class MenuService
     public function __construct(
         private readonly AccessService $access,
         private readonly DataScopeResolver $scopes,
+        private readonly TenantPlanQuery $plans,
+        private readonly TenantContext $context,
     ) {}
 
     /**
@@ -41,7 +45,9 @@ class MenuService
     public function menus(int $userId): array
     {
         /** @var Collection<int, Permission> $menus */
-        $menus = Permission::query()->where('type', 'menu')->orderBy('sort')->orderBy('id')->get();
+        $menus = Permission::query()->where('type', 'menu')->orderBy('sort')->orderBy('id')->get()
+            ->filter(fn (Permission $menu): bool => $this->moduleOpen(explode('.', $menu->code)[0]))
+            ->values();
 
         if ($this->access->isOwner($userId)) {
             return $this->nest($menus, null);
@@ -119,6 +125,16 @@ class MenuService
         }
 
         return $result;
+    }
+
+    /**
+     * 套餐未包含或租户未开通的模块，不出现在侧栏
+     */
+    private function moduleOpen(string $moduleCode): bool
+    {
+        $included = in_array($moduleCode, $this->plans->forTenant((int) $this->context->id())['modules'], true);
+
+        return $included && $this->access->isModuleEnabled($moduleCode);
     }
 
     /**

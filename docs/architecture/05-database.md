@@ -17,6 +17,18 @@
 | `tenant_users.department_id` | 成员可以尚未归属部门 |
 | `personal_access_tokens.expires_at` | Sanctum 允许永不过期 |
 | `personal_access_tokens.last_used_at` | 尚未使用时为空 |
+| `hr_positions.department_id` | 岗位可以不挂部门 |
+| `hr_employees.mobile` | 可选联系方式 |
+| `hr_employees.department_id` | 尚未分配部门 |
+| `hr_employees.position_id` | 尚未分配岗位 |
+| `hr_employees.user_id` | 可以没有登录账号 |
+| `hr_employees.hired_on` | 尚未入职 |
+| `hr_employees.left_on` | 尚未离职 |
+| `hr_contracts.end_on` | 无固定期限没有结束日 |
+| `hr_attendance_records.check_in` | 缺上班卡 |
+| `hr_attendance_records.check_out` | 缺下班卡 |
+| `hr_leave_requests.reviewed_at` | 尚未审批 |
+| `hr_resignations.reviewed_at` | 尚未审批 |
 
 `personal_access_tokens` 跟随 Sanctum，不使用 `deleted_at`。令牌主体是 `users`。
 
@@ -35,8 +47,14 @@
 - `role_permissions`：`uk_role_permissions(role_id, permission_id)`、`idx_role_permissions_permission(permission_id)`
 - `role_departments`：`uk_role_departments(role_id, department_id)`、`idx_role_departments_department(department_id)`
 - `tenant_user_roles`：`uk_tenant_user_roles(tenant_user_id, role_id)`、`idx_tenant_user_roles_role(role_id)`
+- `hr_positions`：`uk_hr_positions_code(tenant_id, code)`、`idx_hr_positions_department(tenant_id, department_id)`
+- `hr_employees`：`uk_hr_employees_no(tenant_id, employee_no)`、`idx_hr_employees_department(tenant_id, department_id)`、`idx_hr_employees_status(tenant_id, status)`、`idx_hr_employees_user(user_id)`
+- `hr_contracts`：`uk_hr_contracts_no(tenant_id, contract_no)`、`idx_hr_contracts_employee(tenant_id, employee_id)`
+- `hr_attendance_records`：`uk_hr_attendance_day(tenant_id, employee_id, work_on)`
+- `hr_leave_requests`：`idx_hr_leaves_employee(tenant_id, employee_id, status)`
+- `hr_resignations`：`idx_hr_resignations_employee(tenant_id, employee_id, status)`
 
-外键加在真实父级上：`tenant_id`、`user_id`、`role_id`、`permission_id`，以及部门的 `parent_id`、`department_id`、`module_code`。删除策略是 RESTRICT，避免级联穿出租户。同一租户的父子部门不靠外键保证，由应用和测试保证。
+外键加在真实父级上：`tenant_id`、`user_id`、`role_id`、`permission_id`，以及部门的 `parent_id`、`department_id`、`module_code`。人事里员工指向岗位，合同、考勤、请假、离职指向员工。`hr_employees.department_id` 和 `user_id` 只存编号，不建外键。删除策略是 RESTRICT，避免级联穿出租户。同一租户的父子部门不靠外键保证，由应用和测试保证。
 
 ## 以后的金额
 

@@ -10,6 +10,13 @@
  * @link        http://www.budff.com
  */
 
+use App\Modules\Hr\Presentation\Http\Controllers\AttendanceController;
+use App\Modules\Hr\Presentation\Http\Controllers\ContractController;
+use App\Modules\Hr\Presentation\Http\Controllers\EmployeeController;
+use App\Modules\Hr\Presentation\Http\Controllers\LeaveController;
+use App\Modules\Hr\Presentation\Http\Controllers\OrganizationController;
+use App\Modules\Hr\Presentation\Http\Controllers\PositionController;
+use App\Modules\Hr\Presentation\Http\Controllers\ResignationController;
 use App\Modules\Iam\Presentation\Http\Controllers\AuthController;
 use App\Modules\Iam\Presentation\Http\Controllers\DepartmentController;
 use App\Modules\Iam\Presentation\Http\Controllers\MemberController;
@@ -68,4 +75,38 @@ Route::middleware(['auth:sanctum', 'tenant', LogContextMiddleware::class, 'modul
 
     Route::get('plan', [PlanController::class, 'show'])->middleware('permission:iam.plans.show');
     Route::put('plan', [PlanController::class, 'update'])->middleware('permission:iam.plans.update');
+});
+
+// 人事接口同样先确认租户和模块开通，再按权限码放行。
+Route::middleware(['auth:sanctum', 'tenant', LogContextMiddleware::class, 'module:hr'])->prefix('hr')->group(function (): void {
+    Route::get('organization', [OrganizationController::class, 'index'])->middleware('permission:hr.organization.index');
+
+    Route::get('positions', [PositionController::class, 'index'])->middleware('permission:hr.positions.index');
+    Route::post('positions', [PositionController::class, 'store'])->middleware('permission:hr.positions.store');
+    Route::put('positions/{position}', [PositionController::class, 'update'])->middleware('permission:hr.positions.update');
+    Route::delete('positions/{position}', [PositionController::class, 'destroy'])->middleware('permission:hr.positions.destroy');
+
+    Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:hr.employees.index');
+    Route::post('employees', [EmployeeController::class, 'store'])->middleware('permission:hr.employees.store');
+    Route::post('employees/{employee}/onboard', [EmployeeController::class, 'onboard'])->middleware('permission:hr.employees.onboard');
+    Route::get('employees/{employee}', [EmployeeController::class, 'show'])->middleware('permission:hr.employees.show');
+    Route::put('employees/{employee}', [EmployeeController::class, 'update'])->middleware('permission:hr.employees.update');
+
+    Route::get('resignations', [ResignationController::class, 'index'])->middleware('permission:hr.resignations.index');
+    Route::post('resignations', [ResignationController::class, 'store'])->middleware('permission:hr.resignations.store');
+    Route::post('resignations/{resignation}/approve', [ResignationController::class, 'approve'])->middleware('permission:hr.resignations.approve');
+    Route::post('resignations/{resignation}/reject', [ResignationController::class, 'reject'])->middleware('permission:hr.resignations.reject');
+    Route::post('resignations/{resignation}/complete', [ResignationController::class, 'complete'])->middleware('permission:hr.resignations.complete');
+
+    Route::get('contracts', [ContractController::class, 'index'])->middleware('permission:hr.contracts.index');
+    Route::post('contracts', [ContractController::class, 'store'])->middleware('permission:hr.contracts.store');
+    Route::post('contracts/{contract}/terminate', [ContractController::class, 'terminate'])->middleware('permission:hr.contracts.terminate');
+
+    Route::get('attendance', [AttendanceController::class, 'index'])->middleware('permission:hr.attendance.index');
+    Route::post('attendance', [AttendanceController::class, 'store'])->middleware('permission:hr.attendance.store');
+
+    Route::get('leaves', [LeaveController::class, 'index'])->middleware('permission:hr.leaves.index');
+    Route::post('leaves', [LeaveController::class, 'store'])->middleware('permission:hr.leaves.store');
+    Route::post('leaves/{leave}/approve', [LeaveController::class, 'approve'])->middleware('permission:hr.leaves.approve');
+    Route::post('leaves/{leave}/reject', [LeaveController::class, 'reject'])->middleware('permission:hr.leaves.reject');
 });

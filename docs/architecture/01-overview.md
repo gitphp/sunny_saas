@@ -1,6 +1,6 @@
 # 总览
 
-Sunny SaaS 第一阶段是仓库根目录上的一个 Laravel 13 应用。浏览器壳是 `resources/js` 里的 Vue 3，由 Laravel Vite 编译，Blade 只负责挂载。Nginx 只把 `public/` 交给 PHP-FPM。没有独立前端站点，也没有 HR、OA、Exam、Finance、Workflow、File、Notification、Audit。
+Sunny SaaS 第一阶段是仓库根目录上的一个 Laravel 13 应用。浏览器壳是 `resources/js` 里的 Vue 3，由 Laravel Vite 编译，Blade 只负责挂载。Nginx 只把 `public/` 交给 PHP-FPM。没有独立前端站点。人事模块已经落地。OA、Exam、Finance、Workflow、File、Notification、Audit 仍未实现。
 
 请求经过追踪、Sanctum 会话或个人访问令牌、租户解析、成员校验、模块开通和权限码。当前租户只来自请求头 `X-Tenant`（slug）。请求体里的 `tenant_id` 会被丢掉。
 

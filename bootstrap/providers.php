@@ -10,6 +10,7 @@
  * @link        http://www.budff.com
  */
 
+use App\Modules\Hr\HrServiceProvider;
 use App\Modules\Iam\IamServiceProvider;
 use App\Modules\Tenant\TenantServiceProvider;
 use App\Providers\AppServiceProvider;
@@ -20,5 +21,6 @@ return [
     SharedServiceProvider::class,
     IamServiceProvider::class,
     TenantServiceProvider::class,
+    HrServiceProvider::class,
 ];
 

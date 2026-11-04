@@ -36,7 +36,7 @@ final class PlanCatalog
             [
                 'code' => 'standard',
                 'name' => '标准版',
-                'description' => '适合持续协作的企业。包含身份与访问，有效成员上限 200 人。',
+                'description' => '适合持续协作的企业。包含身份与访问和人事，有效成员上限 200 人。',
                 'member_limit' => 200,
                 'sort' => 20,
                 'modules' => ['iam'],
