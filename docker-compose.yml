@@ -1,0 +1,81 @@
+# 本地运行编排
+#
+# @package     .
+# @license     MIT License (MIT)
+# @author      Sunny Yang <githup@163.com> QQ4873473
+# @copyright   Copyright (c) 2024 YourCompany. All rights reserved.
+# @link        http://www.budff.com
+
+name: sunny_saas
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8088:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: ./docker/php
+    volumes:
+      - ./:/var/www/html
+      - php_framework:/var/www/html/storage/framework
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_DATABASE: sunny_saas
+      DB_USERNAME: sunny
+      DB_PASSWORD: sunny
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      CACHE_STORE: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    ports:
+      - "13306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sunny_saas
+      MYSQL_USER: sunny
+      MYSQL_PASSWORD: sunny
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - sunny_saas_mysql:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 25s
+
+  redis:
+    image: redis:7
+    ports:
+      - "16379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  sunny_saas_mysql:
+  php_framework:

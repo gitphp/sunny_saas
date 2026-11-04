@@ -1,0 +1,26 @@
+---
+description: 源码文件头、类与方法必须使用统一中文注释
+alwaysApply: true
+---
+
+# 文件头与注释
+
+新增或修改的 PHP、Vue、TypeScript 源码必须带文件头。`vendor/`、`node_modules/`、构建产物不要加。
+
+文件头放在 `<?php` 或文件最上方，说明写成中文，其余字段保持如下：
+
+```php
+/**
+ * 这里写该文件的中文说明
+ *
+ * @package     实际命名空间或目录
+ * @license     MIT License (MIT)
+ * @author      Sunny Yang <githup@163.com> QQ4873473
+ * @copyright   Copyright (c) 2024 YourCompany. All rights reserved.
+ * @link        http://www.budff.com
+ */
+```
+
+类、接口、trait 和具名方法都要有中文说明。已有 `@param`、`@return` 时补在注解上方，不要删掉类型注解。
+
+租户隔离、权限判断、数据范围、跨模块边界这类分支，在代码旁写一句中文注释，说明为什么这样做。
