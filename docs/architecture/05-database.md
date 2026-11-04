@@ -23,7 +23,9 @@
 ## 索引
 
 - `users`：`uk_users_email(email)`、`uk_users_mobile(mobile)`
-- `tenants`：`uk_tenants_slug(slug)`、`idx_tenants_status(status)`
+- `tenants`：`uk_tenants_slug(slug)`、`idx_tenants_status(status)`、`idx_tenants_plan(plan_id)`
+- `plans`：`uk_plans_code(code)`、`idx_plans_status(status)`
+- `plan_modules`：`uk_plan_modules(plan_id, module_code)`
 - `tenant_users`：`uk_tenant_users_tenant_user(tenant_id, user_id)`、`idx_tenant_users_user(user_id)`、`idx_tenant_users_department(tenant_id, department_id)`
 - `departments`：`idx_departments_parent(tenant_id, parent_id)`、`idx_departments_path(tenant_id, path)`
 - `modules`：`uk_modules_code(code)`

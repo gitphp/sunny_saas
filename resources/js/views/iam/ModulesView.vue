@@ -1,4 +1,4 @@
-/**
+<!--
  * 模块开通页
  *
  * @package     resources\js\views\iam
@@ -6,7 +6,7 @@
  * @author      Sunny Yang <githup@163.com> QQ4873473
  * @copyright   Copyright (c) 2024 YourCompany. All rights reserved.
  * @link        http://www.budff.com
- */
+ -->
 <template>
     <div>
         <div class="toolbar">
@@ -16,18 +16,21 @@
             <el-table-column prop="name" label="名称" min-width="160" />
             <el-table-column prop="code" label="编码" min-width="120" />
             <el-table-column prop="description" label="说明" min-width="240" />
+            <el-table-column label="套餐" width="100">
+                <template #default="{ row }">{{ row.included ? '包含' : '未包含' }}</template>
+            </el-table-column>
             <el-table-column label="开通" width="140">
                 <template #default="{ row }">
                     <el-switch
                         :model-value="row.status === 1"
-                        :disabled="row.required || !access.can('iam.modules.update') || switching === row.code"
+                        :disabled="row.required || !row.included || !access.can('iam.modules.update') || switching === row.code"
                         :loading="switching === row.code"
                         @change="(value: boolean) => toggle(row, value)"
                     />
                 </template>
             </el-table-column>
         </el-table>
-        <p class="hint">身份与访问是当前控制台所在模块，保持开通。</p>
+        <p class="hint">只能开通行套餐包含的模块。身份与访问保持开通。</p>
     </div>
 </template>
 

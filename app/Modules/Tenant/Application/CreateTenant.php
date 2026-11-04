@@ -13,7 +13,10 @@
 namespace App\Modules\Tenant\Application;
 
 use App\Modules\Iam\Application\Contracts\TenantProvisioner;
+use App\Modules\Tenant\Infrastructure\Persistence\Plan;
 use App\Modules\Tenant\Infrastructure\Persistence\Tenant;
+use App\Shared\Exceptions\BusinessException;
+use App\Shared\Exceptions\ErrorCode;
 use App\Shared\Tenancy\TenantContext;
 
 /**
@@ -32,14 +35,21 @@ class CreateTenant
     /**
      * 处理当前请求
      *
-     * @return array{id: int, name: string, slug: string, status: int}
+     * @return array{id: int, name: string, slug: string, status: int, plan_code: string}
      */
-    public function handle(int $userId, string $name, string $slug): array
+    public function handle(int $userId, string $name, string $slug, string $planCode = 'basic'): array
     {
+        $plan = Plan::query()->where('code', $planCode)->where('status', 1)->first();
+
+        if ($plan === null) {
+            throw new BusinessException(ErrorCode::VALIDATION, '套餐不存在', 422);
+        }
+
         $tenant = Tenant::query()->create([
             'name' => $name,
             'slug' => $slug,
             'status' => 1,
+            'plan_id' => (int) $plan->id,
             'settings' => [],
         ]);
 
@@ -57,6 +67,7 @@ class CreateTenant
             'name' => (string) $tenant->name,
             'slug' => (string) $tenant->slug,
             'status' => (int) $tenant->status,
+            'plan_code' => (string) $plan->code,
         ];
     }
 }

@@ -1,4 +1,4 @@
-/**
+<!--
  * 部门管理页
  *
  * @package     resources\js\views\iam
@@ -6,7 +6,7 @@
  * @author      Sunny Yang <githup@163.com> QQ4873473
  * @copyright   Copyright (c) 2024 YourCompany. All rights reserved.
  * @link        http://www.budff.com
- */
+ -->
 <template>
     <div>
         <div class="toolbar">

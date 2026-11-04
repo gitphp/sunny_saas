@@ -26,6 +26,7 @@ class Tenant extends Model
         'name',
         'slug',
         'status',
+        'plan_id',
         'settings',
     ];
 
@@ -36,6 +37,7 @@ class Tenant extends Model
     {
         return [
             'status' => 'integer',
+            'plan_id' => 'integer',
             'settings' => 'array',
         ];
     }

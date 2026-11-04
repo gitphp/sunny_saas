@@ -30,10 +30,12 @@
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/me`
 - `GET /api/v1/me/tenants`
-- `POST /api/v1/tenants`
+- `GET /api/v1/plans`
+- `POST /api/v1/tenants`，可选 `plan_code`，默认 `basic`
 - 需要租户：`GET /api/v1/iam/menus`、`GET /api/v1/iam/me`
 - 部门、角色的增删改查
-- `GET /api/v1/iam/members`、`PUT /api/v1/iam/members/{member}`、`PUT /api/v1/iam/members/{member}/roles`
+- `GET /api/v1/iam/members`、`POST /api/v1/iam/members`、`PUT /api/v1/iam/members/{member}`、`PUT /api/v1/iam/members/{member}/roles`、`DELETE /api/v1/iam/members/{member}`
+- `GET /api/v1/iam/plan`、`PUT /api/v1/iam/plan`
 - `GET /api/v1/iam/modules`、`PUT /api/v1/iam/modules/{moduleCode}`
 - `GET /api/v1/iam/permissions`
 

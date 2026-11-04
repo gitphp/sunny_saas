@@ -13,9 +13,11 @@
 namespace App\Modules\Iam;
 
 use App\Modules\Iam\Application\Contracts\MembershipGateway;
+use App\Modules\Iam\Application\Contracts\ModuleGrantSync;
 use App\Modules\Iam\Application\Contracts\TenantProvisioner;
 use App\Modules\Iam\Application\Provisioning\ProvisionTenantOwner;
 use App\Modules\Iam\Infrastructure\Persistence\EloquentMembershipGateway;
+use App\Modules\Iam\Infrastructure\Persistence\EloquentModuleGrantSync;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -30,6 +32,7 @@ class IamServiceProvider extends ServiceProvider
     {
         $this->app->bind(MembershipGateway::class, EloquentMembershipGateway::class);
         $this->app->bind(TenantProvisioner::class, ProvisionTenantOwner::class);
+        $this->app->bind(ModuleGrantSync::class, EloquentModuleGrantSync::class);
     }
 
     /**

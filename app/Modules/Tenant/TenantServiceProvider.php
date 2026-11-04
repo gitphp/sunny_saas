@@ -12,6 +12,8 @@
 
 namespace App\Modules\Tenant;
 
+use App\Modules\Tenant\Application\Contracts\TenantPlanQuery;
+use App\Modules\Tenant\Infrastructure\Persistence\EloquentTenantPlanQuery;
 use App\Modules\Tenant\Infrastructure\Tenancy\HeaderTenantResolver;
 use App\Shared\Tenancy\TenantResolver;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +29,7 @@ class TenantServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(TenantResolver::class, HeaderTenantResolver::class);
+        $this->app->bind(TenantPlanQuery::class, EloquentTenantPlanQuery::class);
     }
 
     /**

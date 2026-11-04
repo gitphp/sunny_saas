@@ -45,9 +45,11 @@ final class IamCatalog
             ['code' => 'iam.members.menu', 'name' => '成员', 'type' => 'menu', 'route' => '/iam/members', 'method' => '', 'icon' => 'avatar', 'sort' => 30, 'parent' => 'iam'],
             ['code' => 'iam.modules.menu', 'name' => '模块', 'type' => 'menu', 'route' => '/iam/modules', 'method' => '', 'icon' => 'grid', 'sort' => 40, 'parent' => 'iam'],
             ['code' => 'iam.permissions.menu', 'name' => '权限', 'type' => 'menu', 'route' => '/iam/permissions', 'method' => '', 'icon' => 'key', 'sort' => 50, 'parent' => 'iam'],
+            ['code' => 'iam.plans.menu', 'name' => '套餐', 'type' => 'menu', 'route' => '/iam/plan', 'method' => '', 'icon' => 'ticket', 'sort' => 60, 'parent' => 'iam'],
             ['code' => 'iam.departments.create', 'name' => '新建部门', 'type' => 'button', 'route' => '', 'method' => '', 'icon' => '', 'sort' => 10, 'parent' => 'iam.departments.menu'],
             ['code' => 'iam.roles.create', 'name' => '新建角色', 'type' => 'button', 'route' => '', 'method' => '', 'icon' => '', 'sort' => 10, 'parent' => 'iam.roles.menu'],
             ['code' => 'iam.members.assign', 'name' => '分配角色', 'type' => 'button', 'route' => '', 'method' => '', 'icon' => '', 'sort' => 10, 'parent' => 'iam.members.menu'],
+            ['code' => 'iam.members.create', 'name' => '添加成员', 'type' => 'button', 'route' => '', 'method' => '', 'icon' => '', 'sort' => 20, 'parent' => 'iam.members.menu'],
             ['code' => 'iam.menus.index', 'name' => '菜单列表', 'type' => 'api', 'route' => '/api/v1/iam/menus', 'method' => 'GET', 'icon' => '', 'sort' => 10, 'parent' => 'iam'],
             ['code' => 'iam.me.show', 'name' => '当前成员', 'type' => 'api', 'route' => '/api/v1/iam/me', 'method' => 'GET', 'icon' => '', 'sort' => 20, 'parent' => 'iam'],
             ['code' => 'iam.departments.index', 'name' => '部门列表', 'type' => 'api', 'route' => '/api/v1/iam/departments', 'method' => 'GET', 'icon' => '', 'sort' => 10, 'parent' => 'iam.departments.menu'],
@@ -62,10 +64,14 @@ final class IamCatalog
             ['code' => 'iam.roles.destroy', 'name' => '删除角色', 'type' => 'api', 'route' => '/api/v1/iam/roles/{role}', 'method' => 'DELETE', 'icon' => '', 'sort' => 50, 'parent' => 'iam.roles.menu'],
             ['code' => 'iam.members.index', 'name' => '成员列表', 'type' => 'api', 'route' => '/api/v1/iam/members', 'method' => 'GET', 'icon' => '', 'sort' => 10, 'parent' => 'iam.members.menu'],
             ['code' => 'iam.members.roles.sync', 'name' => '分配成员角色', 'type' => 'api', 'route' => '/api/v1/iam/members/{member}/roles', 'method' => 'PUT', 'icon' => '', 'sort' => 20, 'parent' => 'iam.members.menu'],
-            ['code' => 'iam.members.update', 'name' => '调整成员部门', 'type' => 'api', 'route' => '/api/v1/iam/members/{member}', 'method' => 'PUT', 'icon' => '', 'sort' => 30, 'parent' => 'iam.members.menu'],
+            ['code' => 'iam.members.update', 'name' => '调整成员', 'type' => 'api', 'route' => '/api/v1/iam/members/{member}', 'method' => 'PUT', 'icon' => '', 'sort' => 30, 'parent' => 'iam.members.menu'],
+            ['code' => 'iam.members.store', 'name' => '添加成员', 'type' => 'api', 'route' => '/api/v1/iam/members', 'method' => 'POST', 'icon' => '', 'sort' => 40, 'parent' => 'iam.members.menu'],
+            ['code' => 'iam.members.destroy', 'name' => '移除成员', 'type' => 'api', 'route' => '/api/v1/iam/members/{member}', 'method' => 'DELETE', 'icon' => '', 'sort' => 50, 'parent' => 'iam.members.menu'],
             ['code' => 'iam.modules.index', 'name' => '模块开通列表', 'type' => 'api', 'route' => '/api/v1/iam/modules', 'method' => 'GET', 'icon' => '', 'sort' => 10, 'parent' => 'iam.modules.menu'],
             ['code' => 'iam.modules.update', 'name' => '更新模块开通', 'type' => 'api', 'route' => '/api/v1/iam/modules/{moduleCode}', 'method' => 'PUT', 'icon' => '', 'sort' => 20, 'parent' => 'iam.modules.menu'],
             ['code' => 'iam.permissions.index', 'name' => '权限目录', 'type' => 'api', 'route' => '/api/v1/iam/permissions', 'method' => 'GET', 'icon' => '', 'sort' => 10, 'parent' => 'iam.permissions.menu'],
+            ['code' => 'iam.plans.show', 'name' => '当前套餐', 'type' => 'api', 'route' => '/api/v1/iam/plan', 'method' => 'GET', 'icon' => '', 'sort' => 10, 'parent' => 'iam.plans.menu'],
+            ['code' => 'iam.plans.update', 'name' => '更换套餐', 'type' => 'api', 'route' => '/api/v1/iam/plan', 'method' => 'PUT', 'icon' => '', 'sort' => 20, 'parent' => 'iam.plans.menu'],
         ];
     }
 }

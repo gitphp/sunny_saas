@@ -17,8 +17,11 @@ use App\Modules\Iam\Infrastructure\Persistence\Department;
 use App\Modules\Iam\Infrastructure\Persistence\Role;
 use App\Modules\Iam\Infrastructure\Persistence\TenantUser;
 use App\Modules\Iam\Infrastructure\Persistence\TenantUserRole;
+use App\Modules\Iam\Infrastructure\Persistence\User;
+use App\Modules\Tenant\Application\Contracts\TenantPlanQuery;
 use App\Shared\Exceptions\BusinessException;
 use App\Shared\Exceptions\ErrorCode;
+use App\Shared\Tenancy\TenantContext;
 
 /**
  * 租户成员维护
@@ -28,7 +31,11 @@ class MemberService
     /**
      * 注入依赖
      */
-    public function __construct(private readonly DataScopeResolver $scopes) {}
+    public function __construct(
+        private readonly DataScopeResolver $scopes,
+        private readonly TenantPlanQuery $plans,
+        private readonly TenantContext $context,
+    ) {}
 
     /**
      * @return list<array<string, mixed>>
@@ -42,6 +49,76 @@ class MemberService
     }
 
     /**
+     * 把已有账号加入当前企业；邮箱不存在时创建全局账号
+     *
+     * @param  array<string, mixed>  $input
+     * @return array<string, mixed>
+     */
+    public function store(int $actorUserId, array $input): array
+    {
+        $tenantId = (int) $this->context->id();
+        $plan = $this->plans->forTenant($tenantId);
+        $activeMembers = TenantUser::query()->where('status', 1)->count();
+
+        // 上限按当前租户的有效成员计算，满员后不能再加入。
+        if ((int) $plan['member_limit'] > 0 && $activeMembers >= (int) $plan['member_limit']) {
+            throw new BusinessException(ErrorCode::VALIDATION, '已达到套餐成员上限', 422);
+        }
+
+        $email = strtolower(trim((string) $input['email']));
+        $user = User::query()->where('email', $email)->first();
+
+        // 邮箱已有全局账号时只加入本企业，不改对方的姓名和密码。
+        $password = $input['password'] ?? null;
+
+        if ($user === null) {
+            if (! is_string($password) || $password === '') {
+                throw new BusinessException(ErrorCode::VALIDATION, '新账号必须设置密码', 422);
+            }
+
+            $user = User::query()->create([
+                'name' => (string) $input['name'],
+                'email' => $email,
+                'password' => $password,
+                'status' => 1,
+            ]);
+        } elseif ((int) $user->status !== 1) {
+            throw new BusinessException(ErrorCode::VALIDATION, '该账号已停用', 422);
+        }
+
+        $member = TenantUser::withTrashed()->where('user_id', $user->id)->first();
+
+        if ($member !== null && ! $member->trashed()) {
+            throw new BusinessException(ErrorCode::VALIDATION, '该用户已是当前企业成员', 422);
+        }
+
+        $departmentId = $this->visibleDepartmentId($input['department_id'] ?? null, $actorUserId);
+
+        if ($member === null) {
+            $member = TenantUser::query()->create([
+                'user_id' => $user->id,
+                'department_id' => $departmentId,
+                'status' => 1,
+                'is_owner' => 0,
+                'joined_at' => now(),
+            ]);
+        } else {
+            $member->restore();
+            $member->fill([
+                'department_id' => $departmentId,
+                'status' => 1,
+                'is_owner' => 0,
+                'joined_at' => now(),
+            ]);
+            $member->save();
+        }
+
+        $this->assignRoles($member, $input['role_ids'] ?? []);
+
+        return $this->present($member->refresh()->load('user', 'roles'));
+    }
+
+    /**
      * 重建成员的角色分配
      *
      * @param  list<int>  $roleIds
@@ -50,22 +127,7 @@ class MemberService
     public function syncRoles(int $memberId, int $actorUserId, array $roleIds): array
     {
         $member = $this->findVisible($memberId, $actorUserId);
-
-        $roleIds = array_values(array_unique(array_map('intval', $roleIds)));
-        $roles = Role::query()->whereIn('id', $roleIds)->get();
-
-        if ($roles->count() !== count($roleIds)) {
-            throw new BusinessException(ErrorCode::VALIDATION, '角色不存在或不属于当前租户', 422);
-        }
-
-        TenantUserRole::query()->where('tenant_user_id', $member->id)->forceDelete();
-
-        foreach ($roles as $role) {
-            TenantUserRole::query()->create([
-                'tenant_user_id' => $member->id,
-                'role_id' => $role->id,
-            ]);
-        }
+        $this->assignRoles($member, $roleIds);
 
         return $this->present($member->refresh()->load('user', 'roles'));
     }
@@ -79,23 +141,36 @@ class MemberService
     public function update(int $memberId, int $actorUserId, array $input): array
     {
         $member = $this->findVisible($memberId, $actorUserId);
-        $departmentId = $input['department_id'] ?? null;
+        $member->department_id = $this->visibleDepartmentId($input['department_id'] ?? null, $actorUserId);
 
-        if ($departmentId) {
-            $department = Department::query()->find((int) $departmentId);
+        if (array_key_exists('status', $input)) {
+            $status = (int) $input['status'] === 1 ? 1 : 0;
 
-            if ($department === null || ! $this->scopes->departmentVisible((int) $department->id, $actorUserId)) {
-                throw new BusinessException(ErrorCode::VALIDATION, '部门不存在或不属于当前租户', 422);
+            if ((int) $member->is_owner === 1 && $status !== 1) {
+                throw new BusinessException(ErrorCode::VALIDATION, '不能停用企业所有者', 422);
             }
 
-            $member->department_id = (int) $department->id;
-        } else {
-            $member->department_id = null;
+            $member->status = $status;
         }
 
         $member->save();
 
         return $this->present($member->refresh()->load('user', 'roles'));
+    }
+
+    /**
+     * 移除企业成员。所有者不能移除。
+     */
+    public function destroy(int $memberId, int $actorUserId): void
+    {
+        $member = $this->findVisible($memberId, $actorUserId);
+
+        if ((int) $member->is_owner === 1) {
+            throw new BusinessException(ErrorCode::VALIDATION, '不能移除企业所有者', 422);
+        }
+
+        TenantUserRole::query()->where('tenant_user_id', $member->id)->forceDelete();
+        $member->delete();
     }
 
     /**
@@ -112,6 +187,48 @@ class MemberService
         }
 
         return $member;
+    }
+
+    /**
+     * 部门必须能被当前操作者看见，避免把成员挂到别的企业或范围外的部门
+     */
+    private function visibleDepartmentId(mixed $departmentId, int $actorUserId): ?int
+    {
+        if (! $departmentId) {
+            return null;
+        }
+
+        $department = Department::query()->find((int) $departmentId);
+
+        if ($department === null || ! $this->scopes->departmentVisible((int) $department->id, $actorUserId)) {
+            throw new BusinessException(ErrorCode::VALIDATION, '部门不存在或不属于当前租户', 422);
+        }
+
+        return (int) $department->id;
+    }
+
+    /**
+     * 角色必须属于当前租户，作用域外的主键直接拒绝
+     *
+     * @param  list<int>  $roleIds
+     */
+    private function assignRoles(TenantUser $member, array $roleIds): void
+    {
+        $roleIds = array_values(array_unique(array_map('intval', $roleIds)));
+        $roles = Role::query()->whereIn('id', $roleIds)->get();
+
+        if ($roles->count() !== count($roleIds)) {
+            throw new BusinessException(ErrorCode::VALIDATION, '角色不存在或不属于当前租户', 422);
+        }
+
+        TenantUserRole::query()->where('tenant_user_id', $member->id)->forceDelete();
+
+        foreach ($roles as $role) {
+            TenantUserRole::query()->create([
+                'tenant_user_id' => $member->id,
+                'role_id' => $role->id,
+            ]);
+        }
     }
 
     /**

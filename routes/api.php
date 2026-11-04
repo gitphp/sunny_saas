@@ -17,6 +17,7 @@ use App\Modules\Iam\Presentation\Http\Controllers\MenuController;
 use App\Modules\Iam\Presentation\Http\Controllers\ModuleController;
 use App\Modules\Iam\Presentation\Http\Controllers\PermissionController;
 use App\Modules\Iam\Presentation\Http\Controllers\RoleController;
+use App\Modules\Tenant\Presentation\Http\Controllers\PlanController;
 use App\Modules\Tenant\Presentation\Http\Controllers\TenantController;
 use App\Shared\Presentation\Middleware\LogContextMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::prefix('auth')->group(function (): void {
 Route::middleware(['auth:sanctum', LogContextMiddleware::class])->group(function (): void {
     Route::get('me', [AuthController::class, 'me']);
     Route::get('me/tenants', [TenantController::class, 'mine']);
+    Route::get('plans', [PlanController::class, 'index']);
     Route::post('tenants', [TenantController::class, 'store']);
 });
 
@@ -53,12 +55,17 @@ Route::middleware(['auth:sanctum', 'tenant', LogContextMiddleware::class, 'modul
     Route::delete('roles/{role}', [RoleController::class, 'destroy'])->middleware('permission:iam.roles.destroy');
 
     Route::get('members', [MemberController::class, 'index'])->middleware('permission:iam.members.index');
+    Route::post('members', [MemberController::class, 'store'])->middleware('permission:iam.members.store');
     // 角色同步比成员更新更具体，必须先注册。
     Route::put('members/{member}/roles', [MemberController::class, 'syncRoles'])->middleware('permission:iam.members.roles.sync');
     Route::put('members/{member}', [MemberController::class, 'update'])->middleware('permission:iam.members.update');
+    Route::delete('members/{member}', [MemberController::class, 'destroy'])->middleware('permission:iam.members.destroy');
 
     Route::get('modules', [ModuleController::class, 'index'])->middleware('permission:iam.modules.index');
     Route::put('modules/{moduleCode}', [ModuleController::class, 'update'])->middleware('permission:iam.modules.update');
 
     Route::get('permissions', [PermissionController::class, 'index'])->middleware('permission:iam.permissions.index');
+
+    Route::get('plan', [PlanController::class, 'show'])->middleware('permission:iam.plans.show');
+    Route::put('plan', [PlanController::class, 'update'])->middleware('permission:iam.plans.update');
 });

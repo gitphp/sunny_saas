@@ -38,8 +38,8 @@ export const useTenantStore = defineStore('tenant', {
             localStorage.setItem('tenant_name', tenant.name);
         },
         /** 创建租户并立刻选中。 */
-        async create(name: string, slug: string): Promise<TenantItem> {
-            const response = await http.post<ApiEnvelope<TenantItem>>('/api/v1/tenants', { name, slug });
+        async create(name: string, slug: string, planCode = 'basic'): Promise<TenantItem> {
+            const response = await http.post<ApiEnvelope<TenantItem>>('/api/v1/tenants', { name, slug, plan_code: planCode });
             const tenant = { ...response.data.data, is_owner: true };
             this.tenants.push(tenant);
             this.select(tenant);

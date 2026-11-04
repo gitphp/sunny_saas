@@ -13,6 +13,7 @@
 namespace App\Modules\Tenant\Presentation\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * 创建租户参数校验
@@ -37,6 +38,10 @@ class StoreTenantRequest extends FormRequest
         if (is_string($this->input('slug'))) {
             $this->merge(['slug' => strtolower(trim((string) $this->input('slug')))]);
         }
+
+        $planCode = $this->input('plan_code');
+        $planCode = is_string($planCode) ? strtolower(trim($planCode)) : '';
+        $this->merge(['plan_code' => $planCode !== '' ? $planCode : 'basic']);
     }
 
     /**
@@ -49,6 +54,7 @@ class StoreTenantRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:100'],
             'slug' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:tenants,slug'],
+            'plan_code' => ['required', 'string', 'max:32', Rule::exists('plans', 'code')->where(fn ($query) => $query->where('status', 1)->whereNull('deleted_at'))],
         ];
     }
 
@@ -64,6 +70,7 @@ class StoreTenantRequest extends FormRequest
             'slug.required' => '租户标识不能为空',
             'slug.regex' => '租户标识只能使用小写字母、数字和中划线',
             'slug.unique' => '租户标识已被使用',
+            'plan_code.exists' => '套餐不存在',
         ];
     }
 }

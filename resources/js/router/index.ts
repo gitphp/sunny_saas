@@ -15,6 +15,7 @@ import DepartmentsView from '@/views/iam/DepartmentsView.vue';
 import MembersView from '@/views/iam/MembersView.vue';
 import ModulesView from '@/views/iam/ModulesView.vue';
 import PermissionsView from '@/views/iam/PermissionsView.vue';
+import PlanView from '@/views/iam/PlanView.vue';
 import RolesView from '@/views/iam/RolesView.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTenantStore } from '@/stores/tenant';
@@ -35,6 +36,7 @@ const router = createRouter({
                 { path: 'iam/members', name: 'members', component: MembersView },
                 { path: 'iam/modules', name: 'modules', component: ModulesView },
                 { path: 'iam/permissions', name: 'permissions', component: PermissionsView },
+                { path: 'iam/plan', name: 'plan', component: PlanView },
             ],
         },
     ],

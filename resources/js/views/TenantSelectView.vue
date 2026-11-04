@@ -1,4 +1,4 @@
-/**
+<!--
  * 选择并创建租户页
  *
  * @package     resources\js\views
@@ -6,7 +6,7 @@
  * @author      Sunny Yang <githup@163.com> QQ4873473
  * @copyright   Copyright (c) 2024 YourCompany. All rights reserved.
  * @link        http://www.budff.com
- */
+ -->
 <template>
     <div class="page">
         <el-card class="card">
@@ -28,6 +28,11 @@
                 <el-form-item label="标识">
                     <el-input v-model="form.slug" placeholder="例如 acme" />
                 </el-form-item>
+                <el-form-item label="套餐">
+                    <el-select v-model="form.plan_code" style="width: 100%">
+                        <el-option v-for="item in plans" :key="item.code" :label="`${item.name}（${item.member_limit} 人）`" :value="item.code" />
+                    </el-select>
+                </el-form-item>
                 <el-button type="success" :loading="loading" @click="create">创建并进入</el-button>
             </el-form>
             <el-alert v-if="error" class="error" :title="error" type="error" show-icon :closable="false" />
@@ -38,6 +43,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { fetchPlans, type PlanRow } from '@/api/iam';
 import { useTenantStore } from '@/stores/tenant';
 
 const tenant = useTenantStore();
@@ -45,9 +51,16 @@ const router = useRouter();
 const selected = ref(tenant.slug);
 const loading = ref(false);
 const error = ref('');
-const form = reactive({ name: '', slug: '' });
+const plans = ref<PlanRow[]>([]);
+const form = reactive({ name: '', slug: '', plan_code: 'basic' });
 
 onMounted(async () => {
+    plans.value = await fetchPlans();
+
+    if (plans.value[0]) {
+        form.plan_code = plans.value[0].code;
+    }
+
     await tenant.fetchTenants();
 
     if (!selected.value && tenant.tenants[0]) {
@@ -73,7 +86,7 @@ async function create(): Promise<void> {
     error.value = '';
 
     try {
-        await tenant.create(form.name, form.slug);
+        await tenant.create(form.name, form.slug, form.plan_code);
         await router.push('/');
     } catch (caught) {
         error.value = typeof caught === 'object' && caught && 'response' in caught

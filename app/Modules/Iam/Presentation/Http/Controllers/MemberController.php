@@ -13,6 +13,7 @@
 namespace App\Modules\Iam\Presentation\Http\Controllers;
 
 use App\Modules\Iam\Application\Member\MemberService;
+use App\Modules\Iam\Presentation\Http\Requests\StoreMemberRequest;
 use App\Modules\Iam\Presentation\Http\Requests\SyncMemberRolesRequest;
 use App\Modules\Iam\Presentation\Http\Requests\UpdateMemberRequest;
 use App\Shared\Presentation\Http\ApiResponse;
@@ -38,6 +39,19 @@ class MemberController
     }
 
     /**
+     * 添加企业成员
+     */
+    public function store(StoreMemberRequest $request): JsonResponse
+    {
+        return ApiResponse::success(
+            $this->members->store((int) $request->user()->id, $request->validated()),
+            'ok',
+            [],
+            201,
+        );
+    }
+
+    /**
      * 重建成员的角色分配
      */
     public function syncRoles(SyncMemberRolesRequest $request, int $member): JsonResponse
@@ -55,6 +69,16 @@ class MemberController
         return ApiResponse::success(
             $this->members->update($member, (int) $request->user()->id, $request->validated()),
         );
+    }
+
+    /**
+     * 移除企业成员
+     */
+    public function destroy(Request $request, int $member): JsonResponse
+    {
+        $this->members->destroy($member, (int) $request->user()->id);
+
+        return ApiResponse::success();
     }
 }
 

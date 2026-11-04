@@ -1,4 +1,4 @@
-/**
+<!--
  * 后台布局
  *
  * @package     resources\js\layouts
@@ -6,7 +6,7 @@
  * @author      Sunny Yang <githup@163.com> QQ4873473
  * @copyright   Copyright (c) 2024 YourCompany. All rights reserved.
  * @link        http://www.budff.com
- */
+ -->
 <template>
     <el-container class="layout">
         <el-aside width="220px" class="aside">

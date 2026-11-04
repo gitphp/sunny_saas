@@ -58,5 +58,17 @@ class EloquentMembershipGateway implements MembershipGateway
             ])
             ->all();
     }
+
+    /**
+     * 统计指定租户的有效成员数
+     */
+    public function activeMemberCount(int $tenantId): int
+    {
+        // 调用方给出租户主键，这里不用当前上下文，避免换套餐时数到别的企业。
+        return TenantUser::withoutGlobalScope('tenant')
+            ->where('tenant_id', $tenantId)
+            ->where('status', 1)
+            ->count();
+    }
 }
 

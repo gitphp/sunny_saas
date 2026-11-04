@@ -49,6 +49,7 @@ class TenantController
             (int) $request->user()->id,
             (string) $request->validated('name'),
             (string) $request->validated('slug'),
+            (string) $request->validated('plan_code'),
         );
 
         return ApiResponse::success($tenant, 'ok', [], 201);

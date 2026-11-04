@@ -30,5 +30,10 @@ interface MembershipGateway
      * @return list<array{tenant_id: int, is_owner: bool, status: int}>
      */
     public function membershipsForUser(int $userId): array;
+
+    /**
+     * 统计指定租户的有效成员数
+     */
+    public function activeMemberCount(int $tenantId): int;
 }
 

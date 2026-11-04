@@ -8,7 +8,7 @@
 - 共享库加 `tenant_id`。自研 `TenantContext`、`TenantResolver`、`TenantMiddleware`。不引入 stancl/tenancy。
 - IAM 自研。不使用 Spatie Permission，不使用 Filament，没有平台超管。
 - 部门属于 IAM。以后 HR 只保存 `department_id` 数值，不引用 IAM 的 Eloquent 模型。本阶段没有 `employees` 表。
-- 登录用户自助创建租户，成为 owner，获得管理员角色和 `iam` 模块。owner 绕过权限码，不绕过租户边界。
+- 登录用户自助创建租户，成为 owner，获得管理员角色和 `iam` 模块。创建时选定套餐，默认基础版。owner 绕过权限码，不绕过租户边界。套餐决定可开通模块和有效成员上限。
 - 权限目录全局。角色、成员、部门、模块开通记录属于租户。
 - 跨模块只依赖 `Application/Contracts`。
 - 租户作用域在上下文为空时抛错，禁止退回全表扫描。

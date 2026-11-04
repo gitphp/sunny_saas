@@ -64,6 +64,15 @@ export interface ModuleRow {
     status: number;
     enabled_at: string | null;
     required: boolean;
+    included: boolean;
+}
+
+export interface PlanRow {
+    code: string;
+    name: string;
+    description: string;
+    member_limit: number;
+    modules: string[];
 }
 
 export interface AccessProfile {
@@ -115,6 +124,20 @@ export async function fetchMembers(): Promise<MemberRow[]> {
 /** 读取模块开通列表 */
 export async function fetchModules(): Promise<ModuleRow[]> {
     const response = await http.get<ApiEnvelope<ModuleRow[]>>('/api/v1/iam/modules');
+
+    return response.data.data;
+}
+
+/** 读取可售套餐。创建租户前也能调用。 */
+export async function fetchPlans(): Promise<PlanRow[]> {
+    const response = await http.get<ApiEnvelope<PlanRow[]>>('/api/v1/plans');
+
+    return response.data.data;
+}
+
+/** 读取当前租户套餐 */
+export async function fetchCurrentPlan(): Promise<PlanRow> {
+    const response = await http.get<ApiEnvelope<PlanRow>>('/api/v1/iam/plan');
 
     return response.data.data;
 }

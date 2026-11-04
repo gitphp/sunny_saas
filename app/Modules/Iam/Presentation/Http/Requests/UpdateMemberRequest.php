@@ -44,6 +44,7 @@ class UpdateMemberRequest extends FormRequest
     {
         return [
             'department_id' => ['present', 'nullable', 'integer', 'min:1'],
+            'status' => ['sometimes', 'integer', 'in:0,1'],
         ];
     }
 }
