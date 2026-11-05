@@ -13,11 +13,13 @@
 namespace App\Modules\Iam;
 
 use App\Modules\Iam\Application\Contracts\DepartmentDirectory;
+use App\Modules\Iam\Application\Contracts\MemberDirectory;
 use App\Modules\Iam\Application\Contracts\MembershipGateway;
 use App\Modules\Iam\Application\Contracts\ModuleGrantSync;
 use App\Modules\Iam\Application\Contracts\TenantProvisioner;
 use App\Modules\Iam\Application\Provisioning\ProvisionTenantOwner;
 use App\Modules\Iam\Infrastructure\Persistence\EloquentDepartmentDirectory;
+use App\Modules\Iam\Infrastructure\Persistence\EloquentMemberDirectory;
 use App\Modules\Iam\Infrastructure\Persistence\EloquentMembershipGateway;
 use App\Modules\Iam\Infrastructure\Persistence\EloquentModuleGrantSync;
 use Illuminate\Support\ServiceProvider;
@@ -34,6 +36,8 @@ class IamServiceProvider extends ServiceProvider
     {
         $this->app->bind(MembershipGateway::class, EloquentMembershipGateway::class);
         $this->app->bind(DepartmentDirectory::class, EloquentDepartmentDirectory::class);
+        // 审批等模块通过契约读取租户成员，禁止直接依赖 IAM 模型。
+        $this->app->bind(MemberDirectory::class, EloquentMemberDirectory::class);
         $this->app->bind(TenantProvisioner::class, ProvisionTenantOwner::class);
         $this->app->bind(ModuleGrantSync::class, EloquentModuleGrantSync::class);
     }
