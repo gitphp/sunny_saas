@@ -25,14 +25,6 @@ import OnboardingView from '@/views/hr/OnboardingView.vue';
 import OrganizationView from '@/views/hr/OrganizationView.vue';
 import PositionsView from '@/views/hr/PositionsView.vue';
 import ResignationsView from '@/views/hr/ResignationsView.vue';
-import DataView from '@/views/approval/DataView.vue';
-import DesignerView from '@/views/approval/DesignerView.vue';
-import DoneView from '@/views/approval/DoneView.vue';
-import ManageView from '@/views/approval/ManageView.vue';
-import MineView from '@/views/approval/MineView.vue';
-import ReceivedView from '@/views/approval/ReceivedView.vue';
-import StartView from '@/views/approval/StartView.vue';
-import TodoView from '@/views/approval/TodoView.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTenantStore } from '@/stores/tenant';
 
@@ -62,15 +54,6 @@ const router = createRouter({
                 { path: 'hr/contracts', name: 'hr-contracts', component: ContractsView },
                 { path: 'hr/attendance', name: 'hr-attendance', component: AttendanceView },
                 { path: 'hr/leaves', name: 'hr-leaves', component: LeavesView },
-                { path: 'approval', redirect: '/approval/start' },
-                { path: 'approval/start', name: 'approval-start', component: StartView },
-                { path: 'approval/todo', name: 'approval-todo', component: TodoView },
-                { path: 'approval/mine', name: 'approval-mine', component: MineView },
-                { path: 'approval/received', name: 'approval-received', component: ReceivedView },
-                { path: 'approval/done', name: 'approval-done', component: DoneView },
-                { path: 'approval/manage', name: 'approval-manage', component: ManageView },
-                { path: 'approval/design/:id', name: 'approval-design', component: DesignerView },
-                { path: 'approval/data', name: 'approval-data', component: DataView },
             ],
         },
     ],

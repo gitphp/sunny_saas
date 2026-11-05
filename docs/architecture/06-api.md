@@ -45,10 +45,5 @@
 - `GET/POST /api/v1/hr/contracts`、`POST /api/v1/hr/contracts/{contract}/terminate`
 - `GET/POST /api/v1/hr/attendance`
 - `GET/POST /api/v1/hr/leaves`，以及 `approve`、`reject`
-- 审批需先开通 `approval`：`GET /api/v1/approval/catalog`、`GET/POST /api/v1/approval/groups`、`PUT/DELETE /api/v1/approval/groups/{group}`
-- `GET/POST /api/v1/approval/definitions`、`GET/PUT /api/v1/approval/definitions/{definition}`、`POST /api/v1/approval/definitions/{definition}/publish`
-- `GET /api/v1/approval/members`、`GET /api/v1/approval/tasks?box=todo|done|cc`
-- `GET/POST /api/v1/approval/instances`、`GET /api/v1/approval/instances/{instance}`，以及 `approve`、`reject`、`revoke`、`comment`
-- `GET /api/v1/approval/data`
 
 OpenAPI 由 dedoc/scramble 根据路由和 FormRequest 生成，地址是 `GET /docs/api.json`。测试断言本阶段 `/api/v1` 路由都出现在文档中。

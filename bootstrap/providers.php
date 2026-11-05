@@ -10,7 +10,6 @@
  * @link        http://www.budff.com
  */
 
-use App\Modules\Approval\ApprovalServiceProvider;
 use App\Modules\Hr\HrServiceProvider;
 use App\Modules\Iam\IamServiceProvider;
 use App\Modules\Tenant\TenantServiceProvider;
@@ -23,6 +22,5 @@ return [
     IamServiceProvider::class,
     TenantServiceProvider::class,
     HrServiceProvider::class,
-    ApprovalServiceProvider::class,
 ];
 

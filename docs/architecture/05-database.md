@@ -29,11 +29,6 @@
 | `hr_attendance_records.check_out` | 缺下班卡 |
 | `hr_leave_requests.reviewed_at` | 尚未审批 |
 | `hr_resignations.reviewed_at` | 尚未审批 |
-| `approval_definitions.group_id` | 流程可以不分组 |
-| `approval_definitions.current_version_id` | 尚未发布 |
-| `approval_versions.published_at` | 草稿还没发布 |
-| `approval_instances.finished_at` | 审批尚未结束 |
-| `approval_tasks.acted_at` | 任务尚未处理 |
 
 `personal_access_tokens` 跟随 Sanctum，不使用 `deleted_at`。令牌主体是 `users`。
 
@@ -58,14 +53,8 @@
 - `hr_attendance_records`：`uk_hr_attendance_day(tenant_id, employee_id, work_on)`
 - `hr_leave_requests`：`idx_hr_leaves_employee(tenant_id, employee_id, status)`
 - `hr_resignations`：`idx_hr_resignations_employee(tenant_id, employee_id, status)`
-- `approval_groups`：`idx_approval_groups_sort(tenant_id, sort)`
-- `approval_definitions`：`uk_approval_def_code(tenant_id, code)`、`idx_approval_def_group(tenant_id, group_id)`
-- `approval_versions`：`uk_approval_version(tenant_id, definition_id, version_no)`
-- `approval_instances`：`uk_approval_inst_serial(tenant_id, serial_no)`、`idx_approval_inst_applicant(tenant_id, applicant_user_id)`、`idx_approval_inst_status(tenant_id, status)`
-- `approval_tasks`：`idx_approval_tasks_assignee(tenant_id, assignee_user_id, status)`、`idx_approval_tasks_node(instance_id, node_key)`
-- `approval_records`：`idx_approval_records_inst(instance_id, id)`
 
-外键加在真实父级上：`tenant_id`、`user_id`、`role_id`、`permission_id`，以及部门的 `parent_id`、`department_id`、`module_code`。人事里员工指向岗位，合同、考勤、请假、离职指向员工。`hr_employees.department_id` 和 `user_id` 只存编号，不建外键。审批的版本指向流程，审批单指向流程和版本，任务和记录指向审批单。`current_version_id`、`applicant_user_id`、`task_id` 只存编号。删除策略是 RESTRICT，避免级联穿出租户。同一租户的父子部门不靠外键保证，由应用和测试保证。
+外键加在真实父级上：`tenant_id`、`user_id`、`role_id`、`permission_id`，以及部门的 `parent_id`、`department_id`、`module_code`。人事里员工指向岗位，合同、考勤、请假、离职指向员工。`hr_employees.department_id` 和 `user_id` 只存编号，不建外键。删除策略是 RESTRICT，避免级联穿出租户。同一租户的父子部门不靠外键保证，由应用和测试保证。
 
 ## 以后的金额
 

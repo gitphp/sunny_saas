@@ -7,7 +7,7 @@
 - 浏览器与 API 同源。Sanctum SPA 使用会话 Cookie 和 CSRF。个人访问令牌发给全局 `users`，不绑定单一租户。当前租户只来自 `X-Tenant`。
 - 共享库加 `tenant_id`。自研 `TenantContext`、`TenantResolver`、`TenantMiddleware`。不引入 stancl/tenancy。
 - IAM 自研。不使用 Spatie Permission，不使用 Filament，没有平台超管。
-- 部门属于 IAM。HR 只保存 `department_id` 数值，通过 `DepartmentDirectory` 读取，不引用 IAM 的 Eloquent 模型。员工档案在 `hr_employees`。审批通过 `MemberDirectory` 选人，其他模块通过 `ApprovalGateway` 发起流程。
+- 部门属于 IAM。HR 只保存 `department_id` 数值，通过 `DepartmentDirectory` 读取，不引用 IAM 的 Eloquent 模型。员工档案在 `hr_employees`。
 - 登录用户自助创建租户，成为 owner，获得管理员角色和 `iam` 模块。创建时选定套餐，默认基础版。owner 绕过权限码，不绕过租户边界。套餐决定可开通模块和有效成员上限。
 - 权限目录全局。角色、成员、部门、模块开通记录属于租户。
 - 跨模块只依赖 `Application/Contracts`。

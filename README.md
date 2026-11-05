@@ -2,7 +2,7 @@
 
 多租户企业综合管理平台。当前仓库是一个 Laravel 应用：浏览器界面和 API 由同一个站点提供，按模块划分领域，用共享数据库上的 `tenant_id` 隔离企业数据。
 
-已落地的是租户、身份与访问（IAM）、人事（HR）和审批。OA、考试、财务、文件、通知、审计仍未实现。更细的约束写在 `docs/architecture/`。
+已落地的是租户、身份与访问（IAM）、人事（HR）。OA、考试、财务、审批流、文件、通知、审计仍未实现。更细的约束写在 `docs/architecture/`。
 
 ## 技术
 
@@ -43,7 +43,6 @@ app/Shared/Exceptions       业务异常、缺少租户上下文
 app/Modules/Tenant          租户档案、创建租户、按 X-Tenant 解析
 app/Modules/Iam             用户、成员、部门、角色、权限、模块开通、套餐查询
 app/Modules/Hr              组织视图、岗位、员工档案、入职离职、合同、考勤、请假
-app/Modules/Approval        流程定义、版本、审批单、待办、抄送
 resources/js                Vue 3 + TypeScript 壳
 ```
 
@@ -74,7 +73,7 @@ Redis 业务键前缀是 `t:{tenantId}:`，外面再套 Laravel 自己的键前�
 | 编码 | 有效成员上限 | 包含模块 |
 | --- | --- | --- |
 | `basic` | 20 | `iam` |
-| `standard` | 200 | `iam`、`hr`、`approval` |
+| `standard` | 200 | `iam`、`hr` |
 
 只能开通行套餐里的模块。换成更小的套餐时，不再包含的模块会被关掉；有效成员超过目标上限时不能换。侧栏只显示套餐包含且已经开通的模块。
 
@@ -104,13 +103,6 @@ Redis 业务键前缀是 `t:{tenantId}:`，外面再套 Laravel 自己的键前�
 - 入职、离职。离职要先批准，办结后员工变为离职。
 - 合同、考勤、请假。合同、考勤和请假只面向尚未离职、且已入职的员工。
 
-**审批**（标准版，且要在「模块」里开通）
-
-- 流程分组、流程定义、表单和流程图。发布后生成不可变版本，进行中的单据停留在发起时的版本。
-- 条件分支、或签、会签、抄送。审批人可以是指定成员或发起人。
-- 待我审批、我的申请、我收到的、我已审批，以及企业审批数据。
-- 其他模块通过 `ApprovalGateway` 按流程编码发起，不引用审批表。发起时可以带上 `source_module` 和 `source_id`。
-
 ## 运行
 
 本机 3306 和 6379 已被其他项目占用，所以 Compose 把 MySQL 映射到 **13306**，Redis 映射到 **16379**，站点映射到 **8088**。容器内部仍是 3306 和 6379。
@@ -132,7 +124,7 @@ wsl -e bash -lc 'cd /mnt/d/app/sunny_saas && docker compose up -d --build'
 wsl -e bash -lc 'cd /mnt/d/app/sunny_saas && docker compose exec -T php php artisan migrate --force'
 ```
 
-浏览器打开 [http://localhost:8088](http://localhost:8088)。注册一个账号，创建企业。要用人事或审批，创建时选标准版，或事后在「套餐」里换到标准版，再在「模块」里开通对应模块。
+浏览器打开 [http://localhost:8088](http://localhost:8088)。注册一个账号，创建企业。要用人事，创建时选标准版，或事后在「套餐」里换到标准版，再在「模块」里开通人事。
 
 改 Vue 或 TypeScript 时执行 `npm run dev`，页面仍由这个 Laravel 应用提供。改完要给容器里的 Nginx 使用时，再执行一次 `npm run build`。
 

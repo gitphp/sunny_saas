@@ -10,9 +10,6 @@
  * @link        http://www.budff.com
  */
 
-use App\Modules\Approval\Presentation\Http\Controllers\DefinitionController;
-use App\Modules\Approval\Presentation\Http\Controllers\GroupController;
-use App\Modules\Approval\Presentation\Http\Controllers\InstanceController;
 use App\Modules\Hr\Presentation\Http\Controllers\AttendanceController;
 use App\Modules\Hr\Presentation\Http\Controllers\ContractController;
 use App\Modules\Hr\Presentation\Http\Controllers\EmployeeController;
@@ -112,31 +109,4 @@ Route::middleware(['auth:sanctum', 'tenant', LogContextMiddleware::class, 'modul
     Route::post('leaves', [LeaveController::class, 'store'])->middleware('permission:hr.leaves.store');
     Route::post('leaves/{leave}/approve', [LeaveController::class, 'approve'])->middleware('permission:hr.leaves.approve');
     Route::post('leaves/{leave}/reject', [LeaveController::class, 'reject'])->middleware('permission:hr.leaves.reject');
-});
-
-// 审批接口先确认租户和模块开通，再按权限码放行。
-Route::middleware(['auth:sanctum', 'tenant', LogContextMiddleware::class, 'module:approval'])->prefix('approval')->group(function (): void {
-    Route::get('catalog', [DefinitionController::class, 'catalog'])->middleware('permission:approval.catalog.index');
-    Route::get('members', [DefinitionController::class, 'members'])->middleware('permission:approval.members.index');
-
-    Route::get('groups', [GroupController::class, 'index'])->middleware('permission:approval.groups.index');
-    Route::post('groups', [GroupController::class, 'store'])->middleware('permission:approval.groups.store');
-    Route::put('groups/{group}', [GroupController::class, 'update'])->middleware('permission:approval.groups.update');
-    Route::delete('groups/{group}', [GroupController::class, 'destroy'])->middleware('permission:approval.groups.destroy');
-
-    Route::get('definitions', [DefinitionController::class, 'index'])->middleware('permission:approval.definitions.index');
-    Route::post('definitions', [DefinitionController::class, 'store'])->middleware('permission:approval.definitions.store');
-    Route::get('definitions/{definition}', [DefinitionController::class, 'show'])->middleware('permission:approval.definitions.show');
-    Route::put('definitions/{definition}', [DefinitionController::class, 'update'])->middleware('permission:approval.definitions.update');
-    Route::post('definitions/{definition}/publish', [DefinitionController::class, 'publish'])->middleware('permission:approval.definitions.publish');
-
-    Route::get('tasks', [InstanceController::class, 'tasks'])->middleware('permission:approval.tasks.index');
-    Route::get('instances', [InstanceController::class, 'mine'])->middleware('permission:approval.instances.mine');
-    Route::post('instances', [InstanceController::class, 'store'])->middleware('permission:approval.instances.store');
-    Route::get('data', [InstanceController::class, 'data'])->middleware('permission:approval.data.index');
-    Route::get('instances/{instance}', [InstanceController::class, 'show'])->middleware('permission:approval.instances.show');
-    Route::post('instances/{instance}/approve', [InstanceController::class, 'approve'])->middleware('permission:approval.instances.approve');
-    Route::post('instances/{instance}/reject', [InstanceController::class, 'reject'])->middleware('permission:approval.instances.reject');
-    Route::post('instances/{instance}/revoke', [InstanceController::class, 'revoke'])->middleware('permission:approval.instances.revoke');
-    Route::post('instances/{instance}/comment', [InstanceController::class, 'comment'])->middleware('permission:approval.instances.comment');
 });
